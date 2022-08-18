@@ -8,26 +8,31 @@ function Art(config, ranges) {
     this.runningRangeAvg = 0;
     this.greenMaxes = [];
     this.purpleMaxes = [];
+    this.drawBg = true;
 
-    this.draw = function(soundwave, amplitude) {
+    this.draw = function(soundwave, amplitude, frequencies , spectrum) {
         this.soundAnalysis(soundwave);
-        let sections = 7;
+        let sections = 8;
         let buffer = 5;
         let sectionHeight = height / sections - buffer;
 
         let section = 0;
-        drawGraph(soundwave, color(50 * section), color("blue"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        this.drawGraph(soundwave, -1, 1, color(50 * section), color("blue"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
 
-        drawGraph(this.avgs, color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        this.drawGraph(spectrum, 0, 255, color(50 * section), color("blue"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
 
-        drawGraph(
+        this.drawGraph(this.avgs, 0, 2,color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        section++;
+
+        this.drawGraph(
             this.ranges,
+            0,2,
             color(50 * section), color("purple"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
 
-        drawNormalizedGraph(
+        this.drawNormalizedGraph(
             soundwave,
             this.runningRangeAvg,
             color(50 * section),
@@ -36,7 +41,7 @@ function Art(config, ranges) {
             section * (sectionHeight + buffer) + sectionHeight, this.greenMaxes);
         section++;
 
-        drawNormalizedGraph(
+        this.drawNormalizedGraph(
             soundwave,
             this.runningAvg,
             color(50 * section),
@@ -46,11 +51,11 @@ function Art(config, ranges) {
             this.purpleMaxes);
         section++;
 
-        drawGraph(this.greenMaxes, color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        this.drawGraphBlarg(this.greenMaxes, color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
 
 
-        drawGraph(this.purpleMaxes, color(50 * section), color("purple"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        this.drawGraphBlarg(this.purpleMaxes, color(50 * section), color("purple"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
     };
 
@@ -102,36 +107,30 @@ function Art(config, ranges) {
     };
 
 
-    this.reset = function() {
-        this.shapes = [];
-        this.drawBackground = true;
-        this.background = color(floor(random(255)));
-        this.stroke = color(random(255), random(255), random(255));
-        background(this.background);
-    };
-    this.reset();
-}
-
-function drawGraph(data, bg, fg, top, bottom) {
-    noStroke();
-    fill(bg);
-    // rect(0, top, width, bottom - top);
+    this.drawGraph = function(data, min, max, bg, fg, top, bottom) {
+    if (this.drawBg) {
+        noStroke();
+        fill(bg);
+        rect(0, top, width, bottom - top);
+    }
     noFill();
     stroke(fg);
     beginShape();
     for (let i = 0; i < data.length; i++) {
         let x = map(i, 0, data.length, 0, width);
-        let y = map(data[i], -1, 1, bottom, top);
+        let y = map(data[i], min, max, bottom, top);
         curveVertex(x, y);
     }
     endShape();
 }
 
 
-function drawNormalizedGraph(data, scalar, bg, fg, top, bottom, maxes) {
-    noStroke();
-    fill(bg);
-    //     rect(0, top, width, bottom - top);
+this.drawNormalizedGraph = function(data, scalar, bg, fg, top, bottom, maxes) {
+    if (this.drawBg) {
+        noStroke();
+        fill(bg);
+        rect(0, top, width, bottom - top);
+    }
     noFill();
     stroke(fg);
     beginShape();
@@ -144,4 +143,36 @@ function drawNormalizedGraph(data, scalar, bg, fg, top, bottom, maxes) {
     }
     endShape();
     maxes.push(localMax);
+}
+
+
+this.drawGraphBlarg = function(data, bg, fg, top, bottom, maxes) {
+    if (this.drawBg) {
+        noStroke();
+        fill(bg);
+        rect(0, top, width, bottom - top);
+    }
+    noFill();
+    stroke(fg);
+    beginShape();
+    let localMax = 0;
+    for (let i = 0; i < data.length; i++) {
+        let x = map(i, 0, data.length, 0, width);
+        let y = data[i] + top + (bottom - top) / 2;
+        curveVertex(x, y);
+    }
+    endShape();
+}
+
+    this.reset = function() {
+        this.shapes = [];
+        this.drawBackground = true;
+        this.background = color(floor(random(255)));
+        this.stroke = color(random(255), random(255), random(255));
+        background(this.background);
+    };
+    this.reset();
+
+
+
 }

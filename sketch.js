@@ -51,7 +51,7 @@ function draw() {
         frequencies[range] = fft.getEnergy(range);
     }
 
-    art.draw(soundwave, amplitudeLevel, frequencies);
+    art.draw(soundwave, amplitudeLevel, frequencies, spectrum);
 }
 
 // This is a fix for chrome:
