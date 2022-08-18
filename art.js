@@ -2,9 +2,14 @@ function Art(config, ranges) {
     this.config = config;
     this.t = 0;
 
+    this.avgs = [];
+    this.ranges = [];
+    this.runningAvg = 0;
+    this.runningRangeAvg = 0;
+
     this.draw = function(soundwave, amplitude) {
         this.soundAnalysis(soundwave);
-        let sections = 5;
+        let sections = 6;
         let buffer = 5;
         let sectionHeight = height / sections - buffer;
 
@@ -12,21 +17,34 @@ function Art(config, ranges) {
         drawGraph(soundwave, color(50 * section), color("blue"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
 
-        drawLogGraph(soundwave, color(50 * section), color("magenta"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
-        section++;
-
         drawGraph(this.avgs, color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
 
-        drawGraph(this.ranges, color(50 * section), color("purple"),section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        drawGraph(
+            this.ranges,
+            color(50 * section), color("purple"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
+
+        drawNormalizedGraph(
+            soundwave,
+            this.runningRangeAvg,
+            color(50 * section),
+            color("teal"),
+            section * (sectionHeight + buffer),
+            section * (sectionHeight + buffer) + sectionHeight);
+        section++;
+
+        drawNormalizedGraph(
+            soundwave,
+            this.runningAvg,
+            color(50 * section),
+            color("orange"),
+            section * (sectionHeight + buffer),
+            section * (sectionHeight + buffer) + sectionHeight);
+        section++;
+
     };
 
-
-    this.avgs = [];
-    this.ranges = [];
-    this.runningAvg = 0;
-    this.runningRangeAvg = 0;
 
     this.soundAnalysis = function(soundwave) {
         let sampleMin = 0;
@@ -110,6 +128,21 @@ function drawLogGraph(data, bg, fg, top, bottom) {
     for (let i = 0; i < data.length; i++) {
         let x = map(log(i), 0, log(data.length), 0, width);
         let y = map(data[i], -1, 1, bottom, top);
+        curveVertex(x, y);
+    }
+    endShape();
+}
+
+function drawNormalizedGraph(data, scalar, bg, fg, top, bottom) {
+    noStroke();
+    fill(bg);
+    rect(0, top, width, bottom - top);
+    noFill();
+    stroke(fg);
+    beginShape();
+    for (let i = 0; i < data.length; i++) {
+        let x = map(i, 0, data.length, 0, width);
+        let y = map(data[i] / scalar, -1, 1, bottom, top);
         curveVertex(x, y);
     }
     endShape();
