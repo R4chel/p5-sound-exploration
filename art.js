@@ -29,7 +29,7 @@ function Art(config, ranges) {
             soundwave,
             this.runningRangeAvg,
             color(50 * section),
-            color("teal"),
+            color("green"),
             section * (sectionHeight + buffer),
             section * (sectionHeight + buffer) + sectionHeight);
         section++;
@@ -38,7 +38,7 @@ function Art(config, ranges) {
             soundwave,
             this.runningAvg,
             color(50 * section),
-            color("orange"),
+            color("purple"),
             section * (sectionHeight + buffer),
             section * (sectionHeight + buffer) + sectionHeight);
         section++;
@@ -142,7 +142,7 @@ function drawNormalizedGraph(data, scalar, bg, fg, top, bottom) {
     beginShape();
     for (let i = 0; i < data.length; i++) {
         let x = map(i, 0, data.length, 0, width);
-        let y = map(data[i] / scalar, -1, 1, bottom, top);
+        let y = data[i] / scalar + top+( bottom -top )/2;
         curveVertex(x, y);
     }
     endShape();
