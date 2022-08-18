@@ -2,18 +2,12 @@ function Art(config, ranges) {
     this.config = config;
 
     this.draw = function(soundwave, amplitude) {
-        noFill();
-        stroke(this.stroke);
-        if (this.drawBackground) {
-            background(this.background);
-        }
-        beginShape();
-        for (let i = 0; i < soundwave.length; i++) {
-            let x = map(i, 0, soundwave.length, 0, width);
-            let y = map(soundwave[i], -1, 1, height, 0);
-            curveVertex(x, y);
-        }
-        endShape();
+        let sections = 2;
+        let buffer = 5;
+        let sectionHeight = height / sections - buffer;
+        
+        let section =0;
+        drawGraph(soundwave, color(0), color("blue"), section*(sectionHeight+buffer), section*(sectionHeight+buffer) +sectionHeight);
     };
 
     this.keyPress = function(key) {
@@ -47,4 +41,19 @@ function Art(config, ranges) {
         background(this.background);
     };
     this.reset();
+}
+
+function drawGraph(data, bg, fg, top, bottom){
+    noStroke();
+    fill(bg);
+    rect(0, top, width, bottom-top);
+    noFill();
+    stroke(fg);
+    beginShape();
+    for (let i = 0; i < data.length; i++) {
+        let x = map(i, 0, data.length, 0, width);
+        let y = map(data[i],-1, 1, bottom, top);
+        curveVertex(x, y);
+    }
+    endShape();
 }

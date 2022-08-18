@@ -15,7 +15,7 @@ function setup() {
 
     angleMode(RADIANS);
     ellipseMode(RADIUS);
-    rectMode(RADIUS);
+    rectMode(CORNER);
     
     let canvas = createCanvas(config.canvasWidth, config.canvasHeight);
 
