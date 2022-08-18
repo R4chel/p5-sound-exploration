@@ -6,10 +6,12 @@ function Art(config, ranges) {
     this.ranges = [];
     this.runningAvg = 0;
     this.runningRangeAvg = 0;
+    this.greenMaxes = [];
+    this.purpleMaxes = [];
 
     this.draw = function(soundwave, amplitude) {
         this.soundAnalysis(soundwave);
-        let sections = 6;
+        let sections = 7;
         let buffer = 5;
         let sectionHeight = height / sections - buffer;
 
@@ -31,7 +33,7 @@ function Art(config, ranges) {
             color(50 * section),
             color("green"),
             section * (sectionHeight + buffer),
-            section * (sectionHeight + buffer) + sectionHeight);
+            section * (sectionHeight + buffer) + sectionHeight, this.greenMaxes);
         section++;
 
         drawNormalizedGraph(
@@ -40,9 +42,16 @@ function Art(config, ranges) {
             color(50 * section),
             color("purple"),
             section * (sectionHeight + buffer),
-            section * (sectionHeight + buffer) + sectionHeight);
+            section * (sectionHeight + buffer) + sectionHeight,
+            this.purpleMaxes);
         section++;
 
+        drawGraph(this.greenMaxes, color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        section++;
+
+
+        drawGraph(this.purpleMaxes, color(50 * section), color("purple"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
+        section++;
     };
 
 
@@ -106,7 +115,7 @@ function Art(config, ranges) {
 function drawGraph(data, bg, fg, top, bottom) {
     noStroke();
     fill(bg);
-    rect(0, top, width, bottom - top);
+    // rect(0, top, width, bottom - top);
     noFill();
     stroke(fg);
     beginShape();
@@ -118,32 +127,21 @@ function drawGraph(data, bg, fg, top, bottom) {
     endShape();
 }
 
-function drawLogGraph(data, bg, fg, top, bottom) {
-    noStroke();
-    fill(bg);
-    rect(0, top, width, bottom - top);
-    noFill();
-    stroke(fg);
-    beginShape();
-    for (let i = 0; i < data.length; i++) {
-        let x = map(log(i), 0, log(data.length), 0, width);
-        let y = map(data[i], -1, 1, bottom, top);
-        curveVertex(x, y);
-    }
-    endShape();
-}
 
-function drawNormalizedGraph(data, scalar, bg, fg, top, bottom) {
+function drawNormalizedGraph(data, scalar, bg, fg, top, bottom, maxes) {
     noStroke();
     fill(bg);
-    rect(0, top, width, bottom - top);
+    //     rect(0, top, width, bottom - top);
     noFill();
     stroke(fg);
     beginShape();
+    let localMax = 0;
     for (let i = 0; i < data.length; i++) {
         let x = map(i, 0, data.length, 0, width);
-        let y = data[i] / scalar + top+( bottom -top )/2;
+        let y = data[i] / scalar + top + (bottom - top) / 2;
+        localMax = max(localMax, data[i] / scalar);
         curveVertex(x, y);
     }
     endShape();
+    maxes.push(localMax);
 }
