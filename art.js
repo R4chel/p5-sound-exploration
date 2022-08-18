@@ -8,7 +8,11 @@ function Art(config, ranges) {
         
         let section =0;
         drawGraph(soundwave, color(0), color("blue"), section*(sectionHeight+buffer), section*(sectionHeight+buffer) +sectionHeight);
+        section++;
+
+        drawLogGraph(soundwave, color(50), color("magenta"), section*(sectionHeight+buffer), section*(sectionHeight+buffer) +sectionHeight);
     };
+
 
     this.keyPress = function(key) {
         switch (key) {
@@ -52,6 +56,21 @@ function drawGraph(data, bg, fg, top, bottom){
     beginShape();
     for (let i = 0; i < data.length; i++) {
         let x = map(i, 0, data.length, 0, width);
+        let y = map(data[i],-1, 1, bottom, top);
+        curveVertex(x, y);
+    }
+    endShape();
+}
+
+function drawLogGraph(data, bg, fg, top, bottom){
+    noStroke();
+    fill(bg);
+    rect(0, top, width, bottom-top);
+    noFill();
+    stroke(fg);
+    beginShape();
+    for (let i = 0; i < data.length; i++) {
+        let x = map(log(i), 0, log(data.length), 0, width);
         let y = map(data[i],-1, 1, bottom, top);
         curveVertex(x, y);
     }
