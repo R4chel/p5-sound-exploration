@@ -87,6 +87,8 @@ function draw() {
     graph(normVols, x0,x1,y0,y1);
     stroke("red");
     graph(rmss, x0,x1,y0,y1);
+    stroke("teal");
+    graph(avgs, x0,x1,y0,y1);
 
 
 }
