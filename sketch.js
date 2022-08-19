@@ -1,10 +1,7 @@
 let art, config;
-let peakDetect;
-let peakDetectSensitive; 
 
 let mic, fft, amplitude;
 let ranges = ["bass", "lowMid", "mid", "highMid", "treble"];
-let frequencies = new Object();
 
 let seed;
 // seed = 0;
@@ -23,19 +20,11 @@ function setup() {
 
     art = new Art(config, ranges);
 
-    let smoothing = 0.8;
     mic = new p5.AudioIn();
-    fft = new p5.FFT(smoothing);
-    peakDetect = new p5.PeakDetect(undefined, undefined,undefined, 20);
-    peakDetect.onPeak(triggerBeat);
-
-    peakDetectSensitive = new p5.PeakDetect(undefined,undefined,0.04, 20);
-    peakDetectSensitive.onPeak(triggerBeat2);
+    fft = new p5.FFT();
     mic.connect(fft);
     amplitude = new p5.Amplitude();
     amplitude.setInput(mic);
-    // amplitude.toggleNormalize(true);
-
     mic.start();
 }
 
@@ -50,39 +39,21 @@ function draw() {
 
     let spectrum = fft.analyze();
     let soundwave = fft.waveform();
-    peakDetect.update(fft);
-
-    peakDetectSensitive.update(fft);
 
     let amplitudeLevel = mic.getLevel();
     let ampLevel = amplitude.getLevel();
-    if(ampLevel != amplitudeLevel){
-        console.log("amps", amplitudeLevel, ampLevel);
+    let precision = 5;
+    if(ampLevel.toFixed(precision) != amplitudeLevel.toFixed(precision)){
+        console.log("amps", amplitudeLevel.toFixed(precision+1), ampLevel.toFixed(precision+1));
     }
 
-    for (let i = 0; i < ranges.length; i++) {
-        let range = ranges[i];
-        frequencies[range] = fft.getEnergy(range);
-    }
+}
 
-    art.draw(soundwave, amplitudeLevel, frequencies, spectrum);
+function soundAnalysis(){
     
 }
 
-function triggerBeat(val){
-   //  console.log("BEAT", val);
-    fill(random(255), random(255), random(255));
 
-    circle(floor(random(width)), floor(random(height)),val * 100);
-}
-function triggerBeat2(val){
-    // console.log("BEAT2", val);
-    if(val < 0.35){
-        
-    fill(random(255), random(255), random(255));
-    square(floor(random(width)), floor(random(height)),val * 500);
-    }
-}
 // This is a fix for chrome:
 // https://github.com/processing/p5.js-sound/issues/249
 function touchStarted() {
