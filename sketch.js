@@ -1,4 +1,6 @@
 let art, config;
+let peakDetect;
+let peakDetectSensitive; 
 
 let mic, fft, amplitude;
 let ranges = ["bass", "lowMid", "mid", "highMid", "treble"];
@@ -24,7 +26,11 @@ function setup() {
     let smoothing = 0.8;
     mic = new p5.AudioIn();
     fft = new p5.FFT(smoothing);
+    peakDetect = new p5.PeakDetect();
+    peakDetect.onPeak(triggerBeat);
 
+    peakDetectSensitive = new p5.PeakDetect(threshold=0.1);
+    peakDetectSensitive.onPeak(triggerBeat2);
     mic.connect(fft);
     // amplitude = new p5.Amplitude();
     // amplitude.setInput(mic);
@@ -43,6 +49,9 @@ function keyPressed(event) {
 function draw() {
     let spectrum = fft.analyze();
     let soundwave = fft.waveform();
+    peakDetect.update(fft);
+
+    peakDetectSensitive.update(fft);
 
     let amplitudeLevel = mic.getLevel();
 
@@ -51,9 +60,23 @@ function draw() {
         frequencies[range] = fft.getEnergy(range);
     }
 
-    art.draw(soundwave, amplitudeLevel, frequencies, spectrum);
+    // art.draw(soundwave, amplitudeLevel, frequencies, spectrum);
 }
 
+function triggerBeat(val){
+    console.log("BEAT", val);
+    fill(random(255), random(255), random(255));
+
+    circle(floor(random(width)), floor(random(height)),val * 100);
+}
+function triggerBeat2(val){
+    console.log("BEAT2", val);
+    if(val < 0.35){
+        
+    fill(random(255), random(255), random(255));
+    square(floor(random(width)), floor(random(height)),val * 100);
+    }
+}
 // This is a fix for chrome:
 // https://github.com/processing/p5.js-sound/issues/249
 function touchStarted() {
