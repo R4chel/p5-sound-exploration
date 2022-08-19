@@ -12,15 +12,12 @@ function Art(config, ranges) {
 
     this.draw = function(soundwave, amplitude, frequencies , spectrum) {
         this.soundAnalysis(soundwave);
-        let sections = 8;
+        let sections = 5;
         let buffer = 5;
         let sectionHeight = height / sections - buffer;
 
         let section = 0;
         this.drawGraph(soundwave, -1, 1, color(50 * section), color("blue"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
-        section++;
-
-        this.drawGraph(spectrum, 0, 255, color(50 * section), color("blue"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
 
         this.drawGraph(this.avgs, 0, 2,color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
@@ -34,28 +31,12 @@ function Art(config, ranges) {
 
         this.drawNormalizedGraph(
             soundwave,
-            this.runningRangeAvg,
-            color(50 * section),
-            color("green"),
-            section * (sectionHeight + buffer),
-            section * (sectionHeight + buffer) + sectionHeight, this.greenMaxes);
-        section++;
-
-        this.drawNormalizedGraph(
-            soundwave,
             this.runningAvg,
             color(50 * section),
-            color("purple"),
+            color("teal"),
             section * (sectionHeight + buffer),
             section * (sectionHeight + buffer) + sectionHeight,
             this.purpleMaxes);
-        section++;
-
-        this.drawGraphBlarg(this.greenMaxes, color(50 * section), color("green"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
-        section++;
-
-
-        this.drawGraphBlarg(this.purpleMaxes, color(50 * section), color("purple"), section * (sectionHeight + buffer), section * (sectionHeight + buffer) + sectionHeight);
         section++;
     };
 
@@ -81,7 +62,6 @@ function Art(config, ranges) {
         }
         this.runningAvg = this.avgs.reduce((acc, x) => acc + x, 0) / this.avgs.length;
         this.runningRangeAvg = this.ranges.reduce((acc, x) => acc + x, 0) / this.ranges.length;
-
     };
 
     this.keyPress = function(key) {
