@@ -11,7 +11,7 @@ function Art(config, ranges) {
     this.drawBg = true;
 
     this.draw = function(soundwave, amplitude, frequencies , spectrum) {
-        this.soundAnalysis(soundwave);
+        this.soundAnalysis(soundwave, amplitude);
         let sections = 5;
         let buffer = 5;
         let sectionHeight = height / sections - buffer;
@@ -41,19 +41,23 @@ function Art(config, ranges) {
     };
 
 
-    this.soundAnalysis = function(soundwave) {
+    this.soundAnalysis = function(soundwave, amplitude) {
         let sampleMin = 0;
         let sampleMax = 0;
         let sampleSum = 0;
+        let squareSum = 0;
         for (let i = 0; i < soundwave.length; i++) {
             let value = soundwave[i];
             sampleMin = min(sampleMin, value);
             sampleMax = max(sampleMax, value);
             sampleSum += abs(value);
+            squareSum += value ** 2;
         }
         let sampleAvg = 2 * sampleSum / soundwave.length;
         let range = sampleMax - sampleMin;
 
+        let rms = Math.sqrt(squareSum / soundwave.length)
+        console.log("here", rms, amplitude);
         this.avgs.push(sampleAvg);
         this.ranges.push(range);
         while (this.avgs.length > this.config.windowSize) {
